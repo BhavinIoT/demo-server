@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Iot Workshop Demo</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+</head>
+<style type="text/css">
+	.light_row {
+		border: solid 0.5px;
+	    background: lightgray;
+	}
+</style>
+<body>
+	<br>
+	<br>
+	<div class="container">
+		<div class="row light_row" id="light1">
+			<div class="col-md-8 col-xs-8">
+				<h3 id="light1_name"></h3>
+				<span id="light1_id"></span>
+			</div>
+			<div class="col-md-4 col-xs-4">
+				<img class="img-thumbnail" id="light1_on" src="on.png" style="height: 60px;">
+				<img class="img-thumbnail" id="light1_off" src="off.png" style="height: 60px;">
+			</div>
+		</div>
+		<div class="row light_row" id="light2">
+			<div class="col-md-8 col-xs-8">
+				<h3 id="light2_name"></h3>
+				<span id="light2_id"></span>
+			</div>
+			<div class="col-md-4 col-xs-4">
+				<img class="img-thumbnail" id="light2_on" src="on.png" style="height: 60px;">
+				<img class="img-thumbnail" id="light2_off" src="off.png" style="height: 60px;">
+			</div>
+		</div>
+		<div class="row light_row" id="light3">
+			<div class="col-md-8 col-xs-8">
+				<h3 id="light3_name"></h3>
+				<span id="light3_id"></span>
+			</div>
+			<div class="col-md-4 col-xs-4">
+				<img class="img-thumbnail" id="light3_on" src="on.png" style="height: 60px;">
+				<img class="img-thumbnail" id="light3_off" src="off.png" style="height: 60px;">
+			</div>
+		</div>
+	</div>
+	<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="http://127.0.0.1:8888/js/dependencies/sails.io.js"></script>
+	<script type="text/javascript">
+		io.sails.url = 'http://127.0.0.1:8888';
+		io.sails.autoConnect = true;
+	</script>
+	<script type="text/javascript">
+		var light_1;
+		var light_2;
+		var light_3;
+		io.socket.on('connect', function () {
+			console.log('connected! now fetching all the lights');
+			refresh();
+		});
+		$("#light1").click(function () {
+			console.log('light1 clicked');
+			var light1_id = $("#light1_id").html();
+			io.socket.put('/light/toggle', {id:light1_id}, function (res, data) {
+				console.log(res, data);
+				refresh();
+			});
+		});
+		$("#light2").click(function () {
+			console.log('light2 clicked');
+			var light2_id = $("#light2_id").html();
+			io.socket.put('/light/toggle', {id:light2_id}, function (res, data) {
+				console.log(res, data);
+				refresh();
+			});
+		});
+		$("#light3").click(function () {
+			console.log('light3 clicked');
+			var light3_id = $("#light3_id").html();
+			io.socket.put('/light/toggle', {id:light3_id}, function (res, data) {
+				console.log(res, data);
+				refresh();
+			});
+		});
+		function refresh () {
+			io.socket.get('/lights',function (lights) {
+				light_1 = lights[0];
+				light_2 = lights[1];
+				light_3 = lights[2];
+				console.log(light_1);
+				console.log(light_2);
+				console.log(light_3);
+				setContent();
+				render();
+			});
+		}
+		function setContent () {
+			$("#light1_name").html(light_1.name);
+			$("#light1_id").html(light_1.id);
+			$("#light2_name").html(light_2.name);
+			$("#light2_id").html(light_2.id);
+			$("#light3_name").html(light_3.name);
+			$("#light3_id").html(light_3.id);
+		}
+		function render (lightTag, lightObj) {
+			if (light_1.state == true) {
+				$("#light1_on").show();
+				$("#light1_off").hide();
+			} else {
+				$("#light1_on").hide();
+				$("#light1_off").show();
+			}
+			if (light_2.state == true) {
+				$("#light2_on").show();
+				$("#light2_off").hide();
+			} else {
+				$("#light2_on").hide();
+				$("#light2_off").show();
+			}
+			if (light_3.state == true) {
+				$("#light3_on").show();
+				$("#light3_off").hide();
+			} else {
+				$("#light3_on").hide();
+				$("#light3_off").show();
+			}
+		}
+	</script>
+</body>
+</html>
